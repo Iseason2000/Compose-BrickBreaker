@@ -9,7 +9,7 @@ data class BoardState(
     var width: Int = 20,
     var location: Offset = Offset((250f - length / 2), 480f),
     var speed: Float = 10F,
-    var color: Color = Color.Black,
+    var color: Color = Color.DarkGray,
     var direction: Int = 0
 ) {
     fun moveRight(): BoardState {

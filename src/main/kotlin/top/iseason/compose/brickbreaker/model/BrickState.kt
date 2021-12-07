@@ -10,21 +10,5 @@ data class BrickState(
     val height: Float = 25F,
     val maxHealth: Int = 3,
     var health: Int = maxHealth,
-    val color: Color = Color.Black
-) {
-    companion object {
-        fun of(offsetList: List<Offset>) = offsetList.map { BrickState(it) }
-        fun of(xRange: IntRange, yRange: IntRange) =
-            of(mutableListOf<Offset>().apply {
-                xRange.forEach { x ->
-                    yRange.forEach { y ->
-                        this += Offset(x.toFloat(), y.toFloat())
-                    }
-                }
-            })
-    }
-
-    fun offsetBy(step: Pair<Int, Int>) =
-        copy(location = Offset(location.x + step.first, location.y + step.second))
-
-}
+    val color: Color = Color.DarkGray
+)

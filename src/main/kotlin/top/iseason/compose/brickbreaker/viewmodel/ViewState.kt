@@ -9,7 +9,6 @@ data class ViewState(
     var bricks: List<BrickState> = emptyList(),
     var ballStates: List<BallState> = emptyList(),
     var props: List<PropState> = emptyList(),
-    var gameStatus: GameStatus = GameStatus.PLAYING,
     var boardState: BoardState = BoardState(),
     var isBallOnBoard: Boolean = true,
     var health: Int = 3,
@@ -26,14 +25,9 @@ enum class GameStatus {
 }
 
 sealed class GameAction {
-    object Start : GameAction()
-
-    object Restart : GameAction()
-    object Pause : GameAction()
     object OutOffBalls : GameAction()
     object Lost : GameAction()
     object Win : GameAction()
-    // object Resume : GameAction()
 }
 
 sealed class BoardAction {

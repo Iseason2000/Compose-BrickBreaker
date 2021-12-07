@@ -18,8 +18,8 @@ enum class PropType(val score: Int, val color: Color) {
     ENLARGE(20, Color(255, 87, 34)),
     SPEEDDOWN(20, Color(255, 152, 0)),
     LONGER(30, Color(205, 220, 57)),
-    SPLITE(50, Color(76, 175, 80)),
-    BOARD_SPEEDUP(-10, Color(121, 85, 72)),
+    SPLITE(200, Color(76, 175, 80)),
+    BOARD_SPEEDUP(10, Color(121, 85, 72)),
 
     //环的
     NARROW(-10, Color(33, 150, 243)),

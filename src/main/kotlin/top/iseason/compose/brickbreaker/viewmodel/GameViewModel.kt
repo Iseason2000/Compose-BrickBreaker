@@ -23,6 +23,15 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
     private val _viewState = MutableStateFlow(ViewState())
     val viewState = _viewState.asStateFlow()
 
+    //游戏状态
+    private val _gameState = MutableStateFlow(GameStatus.READY)
+    val gameState = _gameState.asStateFlow()
+    private val _log = MutableStateFlow("")
+    val log = _log.asStateFlow()
+
+    //当前关卡
+    var level: Int = 1
+
     //使用协程，防止线程阻塞
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -85,16 +94,22 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
                     viewState.bricks = viewState.bricks.toMutableList().apply {
                         removeIf {
                             val isDead = it.health <= 0
-                            if (isDead) placePropInChance(it)
+                            if (isDead) {
+                                placePropInChance(it)
+                                //一个砖块20分
+                                modifyScore(20)
+                                sendLog("分数+20")
+                            }
                             isDead
                         }
                     }
                     emit(viewState)
-                    //一个砖块20块
-                    modifyScore(20)
                     if (getViewState().bricks.isEmpty()) gameAction(GameAction.Win)
                 }
                 BallAction.Over -> {
+                    //少一个球减50分
+                    modifyScore(-50)
+                    sendLog("小球出界,分数-50")
                     if (getViewState().ballStates.isEmpty())
                         gameAction(GameAction.OutOffBalls)
                 }
@@ -108,12 +123,13 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
     /**
      * 处理游戏事件
      */
-    fun gameAction(gameAction: GameAction) {
+    private fun gameAction(gameAction: GameAction) {
         coroutineScope.launch {
             val viewState = getViewState()
             when (gameAction) {
                 GameAction.OutOffBalls -> {
                     viewState.health -= 1
+                    sendLog("所有小球出界!生命-1")
                     emit(viewState)
                     if (viewState.health <= 0) {
                         gameAction(GameAction.Lost)
@@ -123,9 +139,13 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
                 }
                 GameAction.Lost -> {
                     //失败界面
+                    sendLog("游戏失败!")
+                    setGameState(GameStatus.LOST)
                 }
-                GameAction.Win -> {}
-                else -> {}
+                GameAction.Win -> {
+                    sendLog("游戏成功!")
+                    setGameState(GameStatus.WIN)
+                }
             }
         }
     }
@@ -133,24 +153,29 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
     /**
      * 重置挡板与小球
      */
-    fun resetBoardAndBall() {
-        val viewState = getViewState().apply { this.isBallOnBoard = true }
+    private fun resetBoardAndBall() {
+        val viewState = getViewState().apply {
+            this.isBallOnBoard = true
+            ballStates = getDefaultStateByLevel(level).ballStates
+        }
         emit(viewState)
-        upDateBoard()
+        upDateBoard(getDefaultStateByLevel(level).boardState)
     }
 
     /**
      * 更新挡板
      */
-    private fun upDateBoard(boardState: BoardState = BoardState()) {
+    private fun upDateBoard(boardState: BoardState) {
         val viewState = copyViewState()
         viewState.boardState = boardState
+        if (viewState.ballStates.isEmpty()) {
+            viewState.ballStates = listOf(BallState())
+        }
         if (viewState.isBallOnBoard) {
             val bLocation = boardState.location
-            viewState.ballStates = listOf(
-                BallState().apply {
-                    location = Offset(bLocation.x + boardState.length / 2, bLocation.y - size)
-                })
+            viewState.ballStates.forEach {
+                it.location = Offset(bLocation.x + boardState.length / 2, bLocation.y - it.size)
+            }
         }
         emit(viewState)
     }
@@ -269,15 +294,19 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
             when (prop.type) {
                 PropType.ENLARGE -> {
                     viewState.ballStates.forEach { it.size = it.size * 2F }
+                    sendLog("小球变大,+20分")
                 }
                 PropType.NARROW -> {
                     viewState.ballStates.forEach { it.size = it.size * 0.5F }
+                    sendLog("小球变小,-10分")
                 }
                 PropType.SPEEDUP -> {
                     viewState.ballStates.forEach { it.velocity = it.velocity.times(1.5F) }
+                    sendLog("小球加速,-10分")
                 }
                 PropType.SPEEDDOWN -> {
                     viewState.ballStates.forEach { it.velocity = it.velocity.times(0.8F) }
+                    sendLog("小球减速,+20分")
                 }
                 PropType.SPLITE -> {
                     //最多12个，太卡了
@@ -291,18 +320,23 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
                         )
                     }
                     viewState.ballStates = mutableList
+                    sendLog("小球分裂,+50分")
                 }
                 PropType.BOARD_SPEEDUP -> {
                     viewState.boardState.speed *= 1.2F
+                    sendLog("挡板加速,+10分")
                 }
                 PropType.BOARD_SPEEDDOWN -> {
                     viewState.boardState.speed *= 0.8F
+                    sendLog("挡板减速,-10分")
                 }
                 PropType.LONGER -> {
-                    viewState.boardState.length *= 2
+                    viewState.boardState.length = (viewState.boardState.length * 1.25).toInt()
+                    sendLog("挡板变长,+30分")
                 }
                 PropType.SHORTEN -> {
-                    viewState.boardState.length = (viewState.boardState.length * 0.5).toInt()
+                    viewState.boardState.length = (viewState.boardState.length * 0.8).toInt()
+                    sendLog("挡板变短,-20分")
                 }
             }
             modifyScore(prop.type.score)
@@ -331,11 +365,6 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
     private fun Velocity.length() = sqrt(x.pow(2) + y.pow(2))
 
     /**
-     * 对外的更新状态的接口
-     */
-    fun setState(state: ViewState) = emit(state)
-
-    /**
      * 修改当前分数
      */
     private fun modifyScore(score: Int) = emit(getViewState().apply { this.score += score })
@@ -347,6 +376,32 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
         _viewState.value = state
     }
 
+    /**
+     * 设置游戏状态
+     */
+    fun setGameState(state: GameStatus) {
+        coroutineScope.launch {
+            _gameState.value = state
+        }
+    }
+
+    fun setGameLevel(level: Int) {
+        emit(getDefaultStateByLevel(level))
+        this.level = level
+    }
+
+    private fun getDefaultStateByLevel(level: Int) = when (level) {
+        1 -> level1
+        2 -> level2
+        3 -> level3
+        4 -> level4
+        5 -> getLevel5()
+        else -> level1.also { this.level = 1 }
+    }.deepCopy()
+
+    private fun sendLog(log: String) {
+        _log.value = log
+    }
 
     /**
      * 复制当前ViewState

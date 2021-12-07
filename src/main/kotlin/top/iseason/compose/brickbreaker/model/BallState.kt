@@ -10,13 +10,8 @@ data class BallState(
     var location: Offset = Offset(0F, 0F),
     var velocity: Velocity = Velocity(0F, 0F),
     var size: Float = 10.0F,
-    var color: Color = Color.Black
+    var color: Color = Color.DarkGray
 ) {
-    /**
-     * 翻转速度方向
-     */
-    fun rotate() = copy(velocity = velocity.times(-1F))
-
     /**
      * 速度绕Y轴转
      */

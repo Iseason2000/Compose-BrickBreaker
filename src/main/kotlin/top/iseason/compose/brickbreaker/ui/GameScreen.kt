@@ -17,6 +17,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -38,22 +39,24 @@ const val FPS = 60F
 @Composable
 fun GameScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
     val viewState by viewModel.viewState.collectAsState()
+    val gameState by viewModel.gameState.collectAsState()
     val requester = remember { FocusRequester() }
-    viewModel.resetBoardAndBall()
     LaunchedEffect(Unit) {
         requester.requestFocus()
         while (isActive) {
             delay(1000L / FPS.toLong())
-            with(viewModel) {
-                boardAction(BoardAction.Tick)
-                ballAction(BallAction.Tick)
+            if (gameState == GameStatus.PLAYING) {
+                with(viewModel) {
+                    boardAction(BoardAction.Tick)
+                    ballAction(BallAction.Tick)
+                }
             }
         }
     }
     Box(
         modifier = modifier
             .onKeyEvent {
-                if (viewModel.viewState.value.gameStatus != GameStatus.PLAYING) return@onKeyEvent false
+                if (viewModel.gameState.value != GameStatus.PLAYING) return@onKeyEvent false
                 when {
                     (it.key == Key.DirectionRight && it.type == KeyEventType.KeyDown) -> {
                         viewModel.boardAction(BoardAction.MoveRight)
@@ -68,6 +71,11 @@ fun GameScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
                         true
                     }
                     (it.type == KeyEventType.KeyUp) -> {
+                        viewModel.boardAction(BoardAction.MoveStop)
+                        true
+                    }
+                    (it.key == Key.P && it.type == KeyEventType.KeyDown) -> {
+                        viewModel.setGameState(GameStatus.STOP)
                         viewModel.boardAction(BoardAction.MoveStop)
                         true
                     }
@@ -91,6 +99,7 @@ fun GameScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
             drawProps(viewState.props)
             drawBalls(viewState.ballStates)
         }
+
     }
 }
 
@@ -100,7 +109,7 @@ val DrawScope.hRate: Float
     get() = size.height / HEIGHT
 
 //绘制挡板
-fun DrawScope.drawBoard(boardState: BoardState = BoardState()) {
+fun DrawScope.drawBoard(boardState: BoardState) {
     val location = boardState.location
     drawRoundRect(
         boardState.color,
@@ -119,8 +128,8 @@ fun DrawScope.drawBricks(bricks: List<BrickState?>) {
 
 fun DrawScope.drawBrick(brickState: BrickState) {
     val percentage = brickState.health.toFloat() / brickState.maxHealth.toFloat()
-    val location = Offset(brickState.location.x * wRate, brickState.location.y * hRate)
-    val size = Size(brickState.width * wRate, brickState.height * hRate)
+    val location = Offset(brickState.location.x * wRate + 1, brickState.location.y * hRate + 1)
+    val size = Size(brickState.width * wRate - 2, brickState.height * hRate - 2)
     val alpha = when {
         percentage < 0.4f -> 0.4F
         percentage < 0.7f -> 0.7F
@@ -150,9 +159,10 @@ fun DrawScope.drawProp(propState: PropState) {
     val location = propState.location
     drawRoundRect(
         propState.type.color,
-        Offset(location.x * wRate, location.y * hRate),
-        Size(propState.width * wRate, propState.height * hRate),
-        CornerRadius(20f, 20f)
+        Offset(location.x * wRate + 2, location.y * hRate + 2),
+        Size(propState.width * wRate - 4, propState.height * hRate - 4),
+        CornerRadius(20f, 20f),
+        style = Stroke(width = 10F)
     )
 }
 
