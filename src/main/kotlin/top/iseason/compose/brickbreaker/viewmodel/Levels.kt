@@ -9,6 +9,9 @@ import top.iseason.compose.brickbreaker.model.PropState
 import kotlin.math.abs
 import kotlin.random.Random
 
+//存放所有关卡设计模板
+
+
 val level1 = ViewState().apply {
     val mutableListOf = mutableListOf<BrickState>()
     for (i in 0..4) {
