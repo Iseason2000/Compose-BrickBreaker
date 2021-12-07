@@ -17,7 +17,9 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-
+/**
+ * 游戏状态模型,负责接收用户输入对状态进行处理并更新
+ */
 class GameViewModel(private val width: Int = 500, private val height: Int = 500) {
     //界面数据
     private val _viewState = MutableStateFlow(ViewState())
@@ -385,11 +387,17 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
         }
     }
 
+    /**
+     * 设置游戏关卡
+     */
     fun setGameLevel(level: Int) {
         emit(getDefaultStateByLevel(level))
         this.level = level
     }
 
+    /**
+     * 根据关卡序号获取对应关卡模板
+     */
     private fun getDefaultStateByLevel(level: Int) = when (level) {
         1 -> level1
         2 -> level2
@@ -399,6 +407,9 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
         else -> level1.also { this.level = 1 }
     }.deepCopy()
 
+    /**
+     * 发送日志
+     */
     private fun sendLog(log: String) {
         _log.value = log
     }

@@ -15,13 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import top.iseason.compose.brickbreaker.ui.GameBody
 import top.iseason.compose.brickbreaker.ui.HEIGHT
 import top.iseason.compose.brickbreaker.ui.WIDTH
-import top.iseason.compose.brickbreaker.ui.theme.GameBody
 import top.iseason.compose.brickbreaker.ui.theme.MyTheme
 import top.iseason.compose.brickbreaker.viewmodel.GameViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
+//程序入口
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
@@ -29,6 +30,7 @@ fun main() = application {
         icon = painterResource("icon.jpg"),
     ) {
         MyTheme {
+            //通过remember使任何对ViewModel的改变都会自动更新 UI(GameBody)
             val viewModel = remember { GameViewModel(WIDTH.toInt(), HEIGHT.toInt()) }
             GameBody(
                 viewModel, modifier = Modifier

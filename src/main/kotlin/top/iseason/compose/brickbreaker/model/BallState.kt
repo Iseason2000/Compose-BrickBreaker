@@ -5,7 +5,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Velocity
 import kotlin.math.abs
 
-
+/**
+ * 小球数据类
+ */
 data class BallState(
     var location: Offset = Offset(0F, 0F),
     var velocity: Velocity = Velocity(0F, 0F),
@@ -20,7 +22,6 @@ data class BallState(
     /**
      * 速度绕X轴反转
      */
-
     fun rotateX() = copy(velocity = Velocity(velocity.x, -velocity.y))
 
     /**

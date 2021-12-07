@@ -3,7 +3,7 @@ package top.iseason.compose.brickbreaker.model
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 
-//砖块对象，储存砖块数据
+//砖块数据类
 data class BrickState(
     val location: Offset = Offset(0F, 0F),
     val width: Float = 50F,

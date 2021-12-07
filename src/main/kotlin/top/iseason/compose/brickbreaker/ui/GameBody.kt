@@ -1,4 +1,4 @@
-package top.iseason.compose.brickbreaker.ui.theme
+package top.iseason.compose.brickbreaker.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,10 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import top.iseason.compose.brickbreaker.ui.GameScreen
-import top.iseason.compose.brickbreaker.viewmodel.GameStatus
+import top.iseason.compose.brickbreaker.viewmodel.GameStatus.*
 import top.iseason.compose.brickbreaker.viewmodel.GameViewModel
 
+/**
+ * 游戏主体
+ */
 @Composable
 fun GameBody(viewModel: GameViewModel, modifier: Modifier = Modifier) {
     val gameState by viewModel.gameState.collectAsState()
@@ -23,7 +25,7 @@ fun GameBody(viewModel: GameViewModel, modifier: Modifier = Modifier) {
             .background(MaterialTheme.colors.background)
             .fillMaxSize()
     ) {
-        if (gameState != GameStatus.READY) {
+        if (gameState != READY) {
             GameScreen(viewModel, modifier)
             GameBar(viewModel, modifier = Modifier.offset(20.dp, 430.dp).fillMaxSize())
         }
@@ -31,13 +33,16 @@ fun GameBody(viewModel: GameViewModel, modifier: Modifier = Modifier) {
     gameDialog(viewModel)
 }
 
+/**
+ * 对话框
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun gameDialog(viewModel: GameViewModel) {
     val viewState by viewModel.viewState.collectAsState()
     val gameState by viewModel.gameState.collectAsState()
     when (gameState) {
-        GameStatus.READY -> {
+        READY -> {
             AlertDialog(
                 modifier = Modifier.width(250.dp),
                 onDismissRequest = {},
@@ -59,7 +64,7 @@ fun gameDialog(viewModel: GameViewModel) {
                         Button(
                             onClick = {
                                 viewModel.setGameLevel(1)
-                                viewModel.setGameState(GameStatus.PLAYING)
+                                viewModel.setGameState(PLAYING)
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
@@ -70,7 +75,7 @@ fun gameDialog(viewModel: GameViewModel) {
                 }
             )
         }
-        GameStatus.STOP -> {
+        STOP -> {
             AlertDialog(
                 modifier = Modifier.width(250.dp),
                 onDismissRequest = { },
@@ -87,7 +92,7 @@ fun gameDialog(viewModel: GameViewModel) {
                     Box(modifier = Modifier.padding(all = 8.dp)) {
                         Button(
                             onClick = {
-                                viewModel.setGameState(GameStatus.PLAYING)
+                                viewModel.setGameState(PLAYING)
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
@@ -97,7 +102,7 @@ fun gameDialog(viewModel: GameViewModel) {
                 }
             )
         }
-        GameStatus.LOST -> {
+        LOST -> {
             AlertDialog(
                 modifier = Modifier.width(250.dp).focusTarget(),
                 onDismissRequest = {},
@@ -112,7 +117,7 @@ fun gameDialog(viewModel: GameViewModel) {
                         Button(
                             onClick = {
                                 viewModel.setGameLevel(viewModel.level)
-                                viewModel.setGameState(GameStatus.PLAYING)
+                                viewModel.setGameState(PLAYING)
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
@@ -123,7 +128,7 @@ fun gameDialog(viewModel: GameViewModel) {
                 }
             )
         }
-        GameStatus.WIN -> {
+        WIN -> {
             AlertDialog(
                 modifier = Modifier.width(250.dp).focusTarget(),
                 onDismissRequest = {},
@@ -139,7 +144,7 @@ fun gameDialog(viewModel: GameViewModel) {
                             Button(
                                 onClick = {
                                     viewModel.setGameLevel(viewModel.level)
-                                    viewModel.setGameState(GameStatus.PLAYING)
+                                    viewModel.setGameState(PLAYING)
                                 },
                                 modifier = Modifier.size(110.dp, 40.dp)
                             ) {
@@ -149,7 +154,7 @@ fun gameDialog(viewModel: GameViewModel) {
                             Button(
                                 onClick = {
                                     viewModel.setGameLevel(viewModel.level + 1)
-                                    viewModel.setGameState(GameStatus.PLAYING)
+                                    viewModel.setGameState(PLAYING)
                                 },
                                 modifier = Modifier.size(110.dp, 40.dp)
                             ) {
@@ -161,7 +166,8 @@ fun gameDialog(viewModel: GameViewModel) {
                 }
             )
         }
-        else -> {}
+        PLAYING -> {}
+
     }
 }
 

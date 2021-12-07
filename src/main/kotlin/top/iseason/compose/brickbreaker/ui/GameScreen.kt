@@ -35,12 +35,16 @@ const val WIDTH = 500F
 const val HEIGHT = 500F
 const val FPS = 60F
 
+/**
+ * 游戏主画面
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun GameScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
     val viewState by viewModel.viewState.collectAsState()
     val gameState by viewModel.gameState.collectAsState()
     val requester = remember { FocusRequester() }
+    //异步启动线程循环，对游戏事件进行Tick运行
     LaunchedEffect(Unit) {
         requester.requestFocus()
         while (isActive) {
@@ -53,9 +57,11 @@ fun GameScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
             }
         }
     }
+
     Box(
         modifier = modifier
             .onKeyEvent {
+                //监听键盘
                 if (viewModel.gameState.value != GameStatus.PLAYING) return@onKeyEvent false
                 when {
                     (it.key == Key.DirectionRight && it.type == KeyEventType.KeyDown) -> {
@@ -103,12 +109,21 @@ fun GameScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * 给DrawScope添加的实际界面宽度与设定宽度的缩放比例
+ */
 val DrawScope.wRate: Float
     get() = size.width / WIDTH
+
+/**
+ * 给DrawScope添加的实际界面高度与设定高度的缩放比例
+ */
 val DrawScope.hRate: Float
     get() = size.height / HEIGHT
 
-//绘制挡板
+/**
+ * 根据挡板状态绘制挡板
+ */
 fun DrawScope.drawBoard(boardState: BoardState) {
     val location = boardState.location
     drawRoundRect(
@@ -119,6 +134,9 @@ fun DrawScope.drawBoard(boardState: BoardState) {
     )
 }
 
+/**
+ * 绘制所有砖块
+ */
 fun DrawScope.drawBricks(bricks: List<BrickState?>) {
     bricks.forEach {
         if (it == null) return
@@ -126,6 +144,9 @@ fun DrawScope.drawBricks(bricks: List<BrickState?>) {
     }
 }
 
+/**
+ * 根据砖块状态绘制砖块
+ */
 fun DrawScope.drawBrick(brickState: BrickState) {
     val percentage = brickState.health.toFloat() / brickState.maxHealth.toFloat()
     val location = Offset(brickState.location.x * wRate + 1, brickState.location.y * hRate + 1)
@@ -144,6 +165,14 @@ fun DrawScope.drawBrick(brickState: BrickState) {
     )
 }
 
+/**
+ * 绘制所有小球
+ */
+fun DrawScope.drawBalls(list: List<BallState>) = list.forEach { drawBall(it) }
+
+/**
+ * 根据小球状态绘制小球
+ */
 fun DrawScope.drawBall(ballState: BallState = BallState()) {
     drawCircle(
         ballState.color,
@@ -152,9 +181,14 @@ fun DrawScope.drawBall(ballState: BallState = BallState()) {
     )
 }
 
-fun DrawScope.drawBalls(list: List<BallState>) = list.forEach { drawBall(it) }
-
+/**
+ * 绘制所有道具
+ */
 fun DrawScope.drawProps(list: List<PropState>) = list.forEach { drawProp(it) }
+
+/**
+ * 根据道具状态绘制道具
+ */
 fun DrawScope.drawProp(propState: PropState) {
     val location = propState.location
     drawRoundRect(

@@ -3,16 +3,24 @@ package top.iseason.compose.brickbreaker.model
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 
-//道具类
+/**
+ * 道具数据类
+ */
 data class PropState(
     val type: PropType = PropType.ENLARGE,
     val width: Float = 50F,
     val height: Float = 25F,
     val location: Offset = Offset(0F, 0F)
 ) {
+    /**
+     * 生成随机道具
+     */
     fun getRandom() = copy(type = PropType.values().random())
 }
 
+/**
+ * 道具类型及对应分数、颜色
+ */
 enum class PropType(val score: Int, val color: Color) {
     //好的
     ENLARGE(20, Color(255, 87, 34)),

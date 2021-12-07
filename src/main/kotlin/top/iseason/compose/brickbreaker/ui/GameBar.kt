@@ -1,6 +1,5 @@
-package top.iseason.compose.brickbreaker.ui.theme
+package top.iseason.compose.brickbreaker.ui
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -13,6 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import top.iseason.compose.brickbreaker.viewmodel.GameViewModel
 
+/**
+ * 游戏状态栏，显示分数、关卡、生命、日志
+ */
 @Composable
 fun GameBar(viewModel: GameViewModel, modifier: Modifier = Modifier) {
     val viewState by viewModel.viewState.collectAsState()
@@ -29,10 +31,4 @@ fun GameBar(viewModel: GameViewModel, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(margin))
         Text("日志: $log", color = Color.Gray)
     }
-}
-
-@Preview
-@Composable
-fun previewGameBar() {
-    GameBar(GameViewModel())
 }

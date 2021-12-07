@@ -7,7 +7,9 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-//暗色配色
+/**
+ * 暗色配色
+ */
 private val DarkColorPalette = darkColors(
     primary = Color(137, 137, 137),
     primaryVariant = Color(255, 114, 153),
@@ -16,7 +18,9 @@ private val DarkColorPalette = darkColors(
     background = Color(12, 17, 23)
 )
 
-//亮色配色
+/**
+ * 亮色配色
+ */
 private val LightColorPalette = lightColors(
     primary = Color(0, 176, 226),
     primaryVariant = Color(255, 114, 153),
@@ -25,6 +29,9 @@ private val LightColorPalette = lightColors(
     background = Color.White
 )
 
+/**
+ * 自定义主题
+ */
 @Composable
 fun MyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
