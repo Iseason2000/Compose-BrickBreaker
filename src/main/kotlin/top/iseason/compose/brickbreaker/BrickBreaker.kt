@@ -1,3 +1,13 @@
+/*
+ * *
+ *  * Created with IntelliJ IDEA.
+ *  * Description: 使用 Jetbrains Compose for Desktop 制作的打砖块游戏
+ *  * @Author: Iseason
+ *  * DateTime: 2021-12-7
+ *
+ */
+
+
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
