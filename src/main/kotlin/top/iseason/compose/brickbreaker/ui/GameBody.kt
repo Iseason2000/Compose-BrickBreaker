@@ -63,7 +63,7 @@ fun gameDialog(viewModel: GameViewModel) {
                     Box(modifier = Modifier.padding(all = 8.dp)) {
                         Button(
                             onClick = {
-                                viewModel.setGameLevel(1)
+                                viewModel.setGameLevel(5)
                                 viewModel.setGameState(PLAYING)
                             },
                             modifier = Modifier.fillMaxWidth()
@@ -167,7 +167,5 @@ fun gameDialog(viewModel: GameViewModel) {
             )
         }
         PLAYING -> {}
-
     }
 }
-

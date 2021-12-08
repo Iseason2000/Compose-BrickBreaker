@@ -60,6 +60,7 @@ fun GameScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
 
     Box(
         modifier = modifier
+            //捕获键盘事件
             .onKeyEvent {
                 //监听键盘
                 if (viewModel.gameState.value != GameStatus.PLAYING) return@onKeyEvent false
@@ -97,6 +98,7 @@ fun GameScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
             .border(2.dp, Color.Black)
     )
     {
+        //在Canvas上绘制小球、挡板、道具、砖块
         Canvas(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -137,9 +139,8 @@ fun DrawScope.drawBoard(boardState: BoardState) {
 /**
  * 绘制所有砖块
  */
-fun DrawScope.drawBricks(bricks: List<BrickState?>) {
+fun DrawScope.drawBricks(bricks: List<BrickState>) {
     bricks.forEach {
-        if (it == null) return
         drawBrick(it)
     }
 }

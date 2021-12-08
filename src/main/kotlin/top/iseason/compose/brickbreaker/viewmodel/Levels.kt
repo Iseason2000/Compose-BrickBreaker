@@ -89,33 +89,35 @@ val level4 = ViewState().apply {
 }
 
 //最后一关，采用全随机
-fun getLevel5() = ViewState().apply {
-    val mutableListOf = mutableListOf<BrickState>()
-    for (n in 1..50) {
-        mutableListOf.add(
-            BrickState(
-                Offset(Random.nextInt(450).toFloat(), Random.nextInt(400).toFloat()),
-                maxHealth = 1,
-                color = Color(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255))
+val level5: ViewState
+    get() = ViewState().apply {
+        val mutableListOf = mutableListOf<BrickState>()
+        for (n in 1..50) {
+            mutableListOf.add(
+                BrickState(
+                    Offset(Random.nextInt(450).toFloat(), Random.nextInt(400).toFloat()),
+                    maxHealth = 1,
+                    color = Color(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255))
+                )
+            )
+        }
+        bricks = mutableListOf
+        ballStates = listOf(
+            BallState(
+                color = Color(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255)),
+                location = Offset(boardState.location.x + boardState.length / 2, boardState.location.y - 10F)
+            ),
+            BallState(
+                color = Color(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255)),
+                location = Offset(boardState.location.x + boardState.length / 2, boardState.location.y - 10F)
+            ),
+            BallState(
+                color = Color(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255)),
+                location = Offset(boardState.location.x + boardState.length / 2, boardState.location.y - 10F)
             )
         )
     }
-    bricks = mutableListOf
-    ballStates = listOf(
-        BallState(
-            color = Color(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255)),
-            location = Offset(boardState.location.x + boardState.length / 2, boardState.location.y - 10F)
-        ),
-        BallState(
-            color = Color(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255)),
-            location = Offset(boardState.location.x + boardState.length / 2, boardState.location.y - 10F)
-        ),
-        BallState(
-            color = Color(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255)),
-            location = Offset(boardState.location.x + boardState.length / 2, boardState.location.y - 10F)
-        )
-    )
-}
+
 
 fun ViewState.deepCopy() =
     ViewState(

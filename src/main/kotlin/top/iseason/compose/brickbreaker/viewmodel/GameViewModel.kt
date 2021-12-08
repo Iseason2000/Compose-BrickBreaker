@@ -195,8 +195,10 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
      * 根据当前小球获取下一帧小球并计算碰撞
      */
     private fun getNextBall(ball: BallState): BallState? {
+        //计算下一刻的位置
         val ballLocation = ball.location.plus(ball.velocity.toOffset())
         val viewState = getViewState()
+        //挡板碰撞检测
         with(viewState.boardState) {
             //是否x坐标与板重合
             when (ballLocation.x) {
@@ -214,6 +216,7 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
 
             return ball.forceUp()
         }
+        //砖块碰撞检测
         with(viewState.bricks) {
             forEach {
                 with(it) {
@@ -230,11 +233,10 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
                         ball.rotateX()
                     else
                         ball.rotateY()
-
                 }
             }
         }
-        //道具检测
+        //道具碰撞检测
         with(viewState.props) {
             forEach {
                 with(it) {
@@ -250,6 +252,7 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
                 }
             }
         }
+        //边界碰撞检测
         with(ballLocation) {
             if (x < ball.size || x > width - ball.size) return ball.rotateY()
             if (y < ball.size) return ball.rotateX()
@@ -403,7 +406,7 @@ class GameViewModel(private val width: Int = 500, private val height: Int = 500)
         2 -> level2
         3 -> level3
         4 -> level4
-        5 -> getLevel5()
+        5 -> level5
         else -> level1.also { this.level = 1 }
     }.deepCopy()
 
